@@ -18,33 +18,38 @@ class ViewController: UIViewController {
     @IBOutlet weak var startTimerButton: UIButton!
     
      //MARK:- Variable and Constants
-    var slider1ScoreValue: Float = 0.0 {
+    var slider1MaxValue: Float = 0.0 {
         didSet {
             animateSliderImage(slider: slider1)
             checkSliderValue(slider: slider1)
         }
     }
-    var slider2ScoreValue: Float = 0.0 {
+    var slider2MaxValue: Float = 0.0 {
         didSet {
             animateSliderImage(slider: slider2)
             checkSliderValue(slider: slider2)
         }
     }
-    var slider3ScoreValue: Float = 0.0 {
+    var slider3MaxValue: Float = 0.0 {
         didSet {
             animateSliderImage(slider: slider3)
             checkSliderValue(slider: slider3)
         }
     }
-    var slider4ScoreValue: Float = 0.0 {
+    var slider4MaxValue: Float = 0.0 {
         didSet {
             animateSliderImage(slider: slider4)
             checkSliderValue(slider: slider4)
         }
     }
-    var currentScore: Float = 0.0 {
+    var slider1MinValue: Float = 0.0
+    var slider2MinValue: Float = 0.0
+    var slider3MinValue: Float = 0.0
+    var slider4MinValue: Float = 0.0
+    
+    var currentGameScore: Float = 0.0 {
         didSet {
-            scoreLabel.text = ("\(currentScore)")
+            scoreLabel.text = ("\(currentGameScore)")
         }
     }
     
@@ -75,6 +80,10 @@ class ViewController: UIViewController {
      //MARK:- View LifeCycles
     override func viewDidLoad() {
         super.viewDidLoad()
+        slider1.addTarget(self, action: #selector(onSliderValChanged(slider:event:)), for: .valueChanged)
+        slider2.addTarget(self, action: #selector(onSliderValChanged(slider:event:)), for: .valueChanged)
+        slider3.addTarget(self, action: #selector(onSliderValChanged(slider:event:)), for: .valueChanged)
+        slider4.addTarget(self, action: #selector(onSliderValChanged(slider:event:)), for: .valueChanged)
 
     }
         
@@ -83,11 +92,11 @@ class ViewController: UIViewController {
         
     }
     private func reduceScore() {
-        let scores = [slider1ScoreValue, slider2ScoreValue, slider3ScoreValue, slider4ScoreValue]
+        let scores = [slider1MaxValue, slider2MaxValue, slider3MaxValue, slider4MaxValue]
         let totalScore = scores.reduce(0, { x, y in
             x + y
         })
-        currentScore = totalScore
+        currentGameScore = totalScore
     }
     private func startTimer() {
         timerIsPaused.toggle()
@@ -102,10 +111,10 @@ class ViewController: UIViewController {
                     }
                 } else {
                     self.seconds = self.seconds + 1
-                    self.slider1ScoreValue += 1
-                    self.slider2ScoreValue += 1
-                    self.slider3ScoreValue += 1
-                    self.slider4ScoreValue += 1
+                    self.animateSliderImage(slider: self.slider1)
+                    self.animateSliderImage(slider: self.slider2)
+                    self.animateSliderImage(slider: self.slider3)
+                    self.animateSliderImage(slider: self.slider4)
                     self.reduceScore()
                 }
             }
@@ -117,16 +126,16 @@ class ViewController: UIViewController {
         switch slider {
         case slider1:
             checkSliderValue(slider: slider1)
-            slider.setValue(slider1ScoreValue, animated: true)
+            slider.setValue(slider1.value + 1, animated: true)
         case slider2:
             checkSliderValue(slider: slider2)
-            slider.setValue(slider2ScoreValue, animated: true)
+            slider.setValue(slider2.value + 1, animated: true)
         case slider3:
             checkSliderValue(slider: slider3)
-            slider.setValue(slider3ScoreValue, animated: true)
+            slider.setValue(slider3.value + 1, animated: true)
         case slider4:
-            
-            slider.setValue(slider4ScoreValue, animated: true)
+            checkSliderValue(slider: slider4)
+            slider.setValue(slider4.value + 1, animated: true)
         default:
             return
         }
@@ -140,16 +149,38 @@ class ViewController: UIViewController {
             slider.isEnabled = false
         } else {
             slider.isEnabled = true
-            slider.setValue(0, animated: true)
         }
     }
      //MARK:- @IBActions
+    @objc func onSliderValChanged(slider: UISlider, event: UIEvent) {
+        var max: Float = 0.0
+        var min: Float = 0.0
+        if let touchEvent = event.allTouches?.first {
+            switch touchEvent.phase {
+            case .began: 
+                // handle drag began
+                print("Began: \(slider.value)")
+                max = slider.value
+            case .moved:
+                // handle drag moved
+            print("moving")
+            case .ended:
+                // handle drag ended
+                print("Ended: \(slider.value)")
+                min = slider.value
+            default:
+                break
+            }
+        }
+        currentGameScore = (currentGameScore + (max - min))
+        slider.setValue(min, animated: true)
+    }
     @IBAction func resetButtonPressed(_ sender: UIButton) {
-        currentScore = 0
-        slider1ScoreValue = 0
-        slider2ScoreValue = 0
-        slider3ScoreValue = 0
-        slider4ScoreValue = 0
+        currentGameScore = 0
+        slider1MaxValue = 0
+        slider2MaxValue = 0
+        slider3MaxValue = 0
+        slider4MaxValue = 0
         timerLabel.text = "00:00"
         timer.invalidate()
     }
