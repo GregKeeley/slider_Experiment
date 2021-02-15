@@ -99,6 +99,7 @@
                         <outlet property="slider2" destination="kyi-DK-BOs" id="LFF-oL-ldh"/>
                         <outlet property="slider3" destination="KHJ-6f-93V" id="fFX-b9-Cbe"/>
                         <outlet property="slider4" destination="wSK-X4-pwU" id="fqB-0g-ShE"/>
+                        <outlet property="sliderStackView" destination="VbY-aV-O6q" id="vsd-lz-d5X"/>
                         <outlet property="startTimerButton" destination="Ien-R1-IDC" id="GqD-ec-8Bl"/>
                         <outlet property="timerLabel" destination="vq7-d1-A8k" id="8e3-Im-YqN"/>
                     </connections>

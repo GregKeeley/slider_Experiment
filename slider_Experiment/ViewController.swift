@@ -8,7 +8,7 @@
 import UIKit
 
 class ViewController: UIViewController {
-
+    
     @IBOutlet weak var slider1: UISlider!
     @IBOutlet weak var slider2: UISlider!
     @IBOutlet weak var slider3: UISlider!
@@ -16,12 +16,14 @@ class ViewController: UIViewController {
     @IBOutlet weak var scoreLabel: UILabel!
     @IBOutlet weak var timerLabel: UILabel!
     @IBOutlet weak var startTimerButton: UIButton!
+    @IBOutlet weak var sliderStackView: UIStackView!
     
-     //MARK:- Variable and Constants
+    //MARK:- Variable and Constants
     var slider1MaxValue: Float = 0.0 {
         didSet {
             animateSliderImage(slider: slider1)
             checkSliderValue(slider: slider1)
+            
         }
     }
     var slider2MaxValue: Float = 0.0 {
@@ -55,7 +57,7 @@ class ViewController: UIViewController {
     var seconds: Int = 0 {
         didSet {
             if seconds < 10 && minutes < 10 {
-            timerLabel.text = ("0\(minutes):0\(seconds)")
+                timerLabel.text = ("0\(minutes):0\(seconds)")
             } else if seconds < 10 && minutes >= 10 {
                 timerLabel.text = ("\(minutes):0\(seconds)")
             } else {
@@ -73,17 +75,24 @@ class ViewController: UIViewController {
         }
     }
     
-     //MARK:- View LifeCycles
+    //MARK:- View LifeCycles
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         slider1.addTarget(self, action: #selector(onSliderValChanged(slider:event:)), for: .valueChanged)
         slider2.addTarget(self, action: #selector(onSliderValChanged(slider:event:)), for: .valueChanged)
         slider3.addTarget(self, action: #selector(onSliderValChanged(slider:event:)), for: .valueChanged)
         slider4.addTarget(self, action: #selector(onSliderValChanged(slider:event:)), for: .valueChanged)
-
-    }
         
-     //MARK:- Functions
+        
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        //        sliderStackView.transform = CGAffineTransform.init(rotationAngle: .pi/2)
+    }
+    //MARK:- Functions
+    func setupSlider(_ slider: UISlider) {
+        
+    }
     private func reduceScore() {
         let scores = [slider1MaxValue, slider2MaxValue, slider3MaxValue, slider4MaxValue]
         let totalScore = scores.reduce(0, { x, y in
@@ -108,7 +117,6 @@ class ViewController: UIViewController {
                     self.animateSliderImage(slider: self.slider2)
                     self.animateSliderImage(slider: self.slider3)
                     self.animateSliderImage(slider: self.slider4)
-//                    self.reduceScore()
                 }
             }
         } else {
@@ -116,23 +124,29 @@ class ViewController: UIViewController {
         }
     }
     private func animateSliderImage(slider: UISlider) {
+        let duration = 1.0
+        let climbRate: Float = 3.0
         switch slider {
         case slider1:
             checkSliderValue(slider: slider1)
-            slider.setValue(slider1.value + 1, animated: true)
-//            slider1MaxValue = slider1.value
+            UIView.animate(withDuration: duration, animations: {
+                slider.setValue(self.slider1.value + climbRate, animated: true)
+            })
         case slider2:
             checkSliderValue(slider: slider2)
-            slider.setValue(slider2.value + 1, animated: true)
-//            slider2MaxValue = slider2.value
+            UIView.animate(withDuration: duration, animations: {
+                slider.setValue(self.slider2.value + climbRate, animated: true)
+            })
         case slider3:
             checkSliderValue(slider: slider3)
-            slider.setValue(slider3.value + 1, animated: true)
-//            slider3MaxValue = slider3.value
+            UIView.animate(withDuration: duration, animations: {
+                slider.setValue(self.slider3.value + climbRate, animated: true)
+            })
         case slider4:
             checkSliderValue(slider: slider4)
-            slider.setValue(slider4.value + 1, animated: true)
-//            slider4MaxValue = slider4.value
+            UIView.animate(withDuration: duration, animations: {
+                slider.setValue(self.slider4.value + climbRate, animated: true)
+            })
         default:
             return
         }
@@ -148,7 +162,7 @@ class ViewController: UIViewController {
             slider.isEnabled = true
         }
     }
-     //MARK:- @IBActions
+    //MARK:- @IBActions
     
     @objc func onSliderValChanged(slider: UISlider, event: UIEvent) {
         var min: Float = 0.0
