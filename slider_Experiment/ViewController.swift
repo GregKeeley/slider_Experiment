@@ -42,14 +42,10 @@ class ViewController: UIViewController {
             checkSliderValue(slider: slider4)
         }
     }
-    var slider1MinValue: Float = 0.0
-    var slider2MinValue: Float = 0.0
-    var slider3MinValue: Float = 0.0
-    var slider4MinValue: Float = 0.0
     
     var currentGameScore: Float = 0.0 {
         didSet {
-            scoreLabel.text = ("\(currentGameScore)")
+            scoreLabel.text = ("\(currentGameScore.rounded())")
         }
     }
     
@@ -88,9 +84,6 @@ class ViewController: UIViewController {
     }
         
      //MARK:- Functions
-    func setupSlider(_ slider: UISlider) {
-        
-    }
     private func reduceScore() {
         let scores = [slider1MaxValue, slider2MaxValue, slider3MaxValue, slider4MaxValue]
         let totalScore = scores.reduce(0, { x, y in
@@ -115,7 +108,7 @@ class ViewController: UIViewController {
                     self.animateSliderImage(slider: self.slider2)
                     self.animateSliderImage(slider: self.slider3)
                     self.animateSliderImage(slider: self.slider4)
-                    self.reduceScore()
+//                    self.reduceScore()
                 }
             }
         } else {
@@ -127,15 +120,19 @@ class ViewController: UIViewController {
         case slider1:
             checkSliderValue(slider: slider1)
             slider.setValue(slider1.value + 1, animated: true)
+//            slider1MaxValue = slider1.value
         case slider2:
             checkSliderValue(slider: slider2)
             slider.setValue(slider2.value + 1, animated: true)
+//            slider2MaxValue = slider2.value
         case slider3:
             checkSliderValue(slider: slider3)
             slider.setValue(slider3.value + 1, animated: true)
+//            slider3MaxValue = slider3.value
         case slider4:
             checkSliderValue(slider: slider4)
             slider.setValue(slider4.value + 1, animated: true)
+//            slider4MaxValue = slider4.value
         default:
             return
         }
@@ -152,29 +149,52 @@ class ViewController: UIViewController {
         }
     }
      //MARK:- @IBActions
+    
     @objc func onSliderValChanged(slider: UISlider, event: UIEvent) {
-        var max: Float = 0.0
         var min: Float = 0.0
         if let touchEvent = event.allTouches?.first {
             switch touchEvent.phase {
-            case .began: 
-                // handle drag began
-                print("Began: \(slider.value)")
-                max = slider.value
-            case .moved:
-                // handle drag moved
-            print("moving")
+            case .began:
+                switch slider {
+                case slider1:
+                    if slider.value > slider1MaxValue {
+                        slider1MaxValue = slider.value
+                    }
+                case slider2:
+                    if slider.value > slider1MaxValue {
+                        slider2MaxValue = slider.value
+                    }
+                case slider3:
+                    if slider.value > slider1MaxValue {
+                        slider3MaxValue = slider.value
+                    }
+                case slider4:
+                    if slider.value > slider1MaxValue {
+                        slider4MaxValue = slider.value
+                    }
+                default:
+                    return
+                }
             case .ended:
-                // handle drag ended
-                print("Ended: \(slider.value)")
                 min = slider.value
+                switch slider {
+                case slider1:
+                    currentGameScore = (currentGameScore + (slider1MaxValue - min))
+                case slider2:
+                    currentGameScore = (currentGameScore + (slider2MaxValue - min))
+                case slider3:
+                    currentGameScore = (currentGameScore + (slider3MaxValue - min))
+                case slider4:
+                    currentGameScore = (currentGameScore + (slider4MaxValue - min))
+                default:
+                    return
+                }
             default:
                 break
             }
         }
-        currentGameScore = (currentGameScore + (max - min))
-        slider.setValue(min, animated: true)
     }
+    
     @IBAction func resetButtonPressed(_ sender: UIButton) {
         currentGameScore = 0
         slider1MaxValue = 0
